@@ -1,0 +1,144 @@
+// function addTag(tagName) { // sử dụng chrome storage để lưu trữ thẻ tag người dùng nhập thêm
+//     chrome.storage.sync.get('myTags', function(data) {
+//         if (Array.isArray(data.myTags)) {
+//             data.myTags.push(tagName);
+//         } else {
+//             data.myTags = [tagName];
+//         }
+//         chrome.storage.sync.set({myTags: data.myTags}, function() {
+//             console.log('The number is set to ' + data);
+//             renderTag(tagName);
+//         });
+//     });
+// }
+
+// function deleteTag(tagName) { // Xóa bỏ tag từ chrome storage
+//     chrome.storage.sync.get('myTags', function(data) {
+//         let id = data.myTags.indexOf(tagName);
+//         if (id !== -1) {
+//             data.myTags.splice(id, 1);
+//         }
+//         chrome.storage.sync.set({myTags: data.myTags}, function() {
+//             console.log('The number is set to ' + data);
+//         });
+//     });
+// }
+
+// function renderTag(tagName) { // render checkbox tương ứng với thẻ tag
+//     $(".my-tags").append(`
+//         <div class="checkbox-inline">
+//             <label><input type="checkbox" value="${tagName}">${tagName}</label>
+//             <span class="delete-tag"> x</span>
+//         </div>`
+//     );
+// }
+
+// function renderAllTag() { // render tất cả các thẻ tag của người dùng
+//     chrome.storage.sync.get('myTags', function(data) {
+//         if (Array.isArray(data.myTags)) {
+//             data.myTags.forEach((item) => {
+//                 renderTag(item)
+//             });
+//         }
+//     });
+// }
+
+// document.addEventListener('DOMContentLoaded', function () { 
+//     renderAllTag();
+//     $("#pause").hide();
+//     $('#play').on('click', () => {
+//         chrome.tabs.executeScript(null, {code:"playImg()"});
+       
+//         $("#pause").show();
+//         $("#play").hide();
+//     });
+
+//     $('#pause').on('click', () => {
+//         chrome.tabs.executeScript(null,
+//           {code:"pauseImg()"});
+//         window.close();
+//         $("#pause").hide();
+//         $("#play").show();
+//     });
+
+//     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) { // get trang thái pause, play của ảnh trên trang
+//         chrome.tabs.sendMessage(tabs[0].id, {message: "get status"}, function(response) {
+//             if (response.isPlaying) {
+//                 $("#pause").show();
+//                 $("#play").hide();
+//             }
+//             $(".checkbox-inline input").each((index, element) => {
+//                 let thth = $(element)[0].value;
+//                 let id = response.tagList.findIndex((tag) => { return tag === $(element)[0].value});
+//                 if (id >= 0) {
+//                     $(element).attr('checked', true);
+//                 }
+//             });
+//         });
+//     });
+
+//     $(document).on('change', ".checkbox-inline input", (e) => { // thêm hoặc xóa tag khi người dùng click vào checkbox
+//         let tag = e.target.value;
+//         let message = '';
+//         if (e.target.checked) {
+//             message = 'add tag';
+            
+//         } else {
+//             message = 'delete tag';
+//         }
+//         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+//             chrome.tabs.sendMessage(tabs[0].id, {message: message, tag: tag});
+//         });
+//     })
+
+//     $(".input-group-addon").on('click', () => { // thêm thẻ tag
+//         let tag = $('#tag').val();
+//         if (tag !== '') {
+//             $('#tag').val('');
+//             addTag(tag);
+//         } else {
+//             console.log('khong nhap gi');
+//         }
+        
+//     });
+
+//     $(document).on("mouseover", ".checkbox-inline", function() { //hiển thị nút xóa tag khi hover chuột qua checkbox
+//         if (!$(this).find('input')[0].checked) {
+//             $(this).find("span").css('display', 'inline');
+//         }
+//     });
+//     $(document).on("mouseout", ".checkbox-inline", function() {
+//         $(this).find("span").css('display', 'none');
+//     });
+
+//     $(document).on("click", ".delete-tag", function() { // khi người dùng xóa tag
+//         let tagName = $(this).parent().find("input").val();
+//         $(this).parent().remove();
+//         deleteTag(tagName);
+//     })
+// });
+
+import test from "./test.js";
+console.log(test);
+
+chrome.runtime.onInstalled.addListener(function () {
+    chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
+        chrome.declarativeContent.onPageChanged.addRules([{
+            conditions: [
+                // When a page contains a <video> tag...
+                console.log('vào'),
+                
+                new chrome.declarativeContent.PageStateMatcher({
+                    pageUrl: { hostEquals: 'www.youtube.com' }
+                })
+            ],
+            // ... show the page action.
+            actions: [new chrome.declarativeContent.ShowPageAction()]
+        }]);
+    })
+});
+
+chrome.tabs.onUpdated.addListener(function () {
+    console.log('vaoffffff');
+    
+})

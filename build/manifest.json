@@ -1,0 +1,32 @@
+{
+    "manifest_version": 2,
+    "name": "gif everywhere",
+    "description": "This extension get a random gif for relaxing",
+    "version": "2.0",
+    "browser_action": {
+        "default_icon": "logo.png",
+        "default_popup": "html/popup.html"
+    },
+    "permissions": [
+        "activeTab",
+        "http://*/*",
+        "https://*/*",
+        "storage"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "http://unipos.me/*",
+                "https://unipos.me/*"
+            ],
+            "js": [
+                "js/externals/libs.js",
+                "js/internals/background.js"
+            ],
+            "run_at": "document_end"
+        }
+    ],
+    "web_accessible_resources": [
+        "js/internals/background.js"
+    ]
+}

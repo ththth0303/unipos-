@@ -1,0 +1,5 @@
+{
+    "/js/externals/libs.js": "/js/externals/libs.js",
+    "/js/internals/background.js": "/js/internals/background.js",
+    "/js/externals/popup.js": "/js/externals/popup.js"
+}
