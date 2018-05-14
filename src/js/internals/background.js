@@ -86,3 +86,12 @@ $(document).ready(function() {
     }, 2000);
     
 })
+
+chrome.runtime.onMessage.addListener(function (params) {
+    console.log(params);
+    if (params.message === 'get point') {
+        getPoint(params.id);
+    }
+    
+})
+

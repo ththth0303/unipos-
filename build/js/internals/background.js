@@ -10568,6 +10568,13 @@ __WEBPACK_IMPORTED_MODULE_1_jquery___default()(document).ready(function () {
     }, 2000);
 });
 
+chrome.runtime.onMessage.addListener(function (params) {
+    console.log(params);
+    if (params.message === 'get point') {
+        getPoint(params.id);
+    }
+});
+
 /***/ }),
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {

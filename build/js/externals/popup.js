@@ -215,9 +215,21 @@ chrome.runtime.onInstalled.addListener(function () {
         }]);
     });
 });
+var url = '';
+chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
+    url = tabs[0].url;
+});
 
 chrome.tabs.onUpdated.addListener(function () {
-    console.log('vaoffffff');
+    chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
+        if (url !== tabs[0].url) {
+            url = tabs[0].url;
+            var matches = url.match(/https:\/\/unipos.me\/.*?i=(.*)/);
+            if (matches !== null && matches[1]) {
+                chrome.tabs.sendMessage(tabs[0].id, { message: "get point", id: matches[1] }, function (response) {});
+            }
+        }
+    });
 });
 
 /***/ }),
