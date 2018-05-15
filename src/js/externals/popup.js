@@ -118,39 +118,65 @@
 //     })
 // });
 
-import test from "./test.js";
-console.log(test);
+import api from "./chrome-api";
+// console.log(api);
 
-chrome.runtime.onInstalled.addListener(function () {
-    chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
-        chrome.declarativeContent.onPageChanged.addRules([{
-            conditions: [
-                // When a page contains a <video> tag...
-                console.log('vào'),
-                
-                new chrome.declarativeContent.PageStateMatcher({
-                    pageUrl: { hostEquals: 'www.youtube.com' }
-                })
-            ],
-            // ... show the page action.
-            actions: [new chrome.declarativeContent.ShowPageAction()]
-        }]);
-    })
-});
 let url = '';
-chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
-    url = tabs[0].url;
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
+        url = tabs[0].url;
+        let matches = url.match(/https:\/\/unipos.me\/.*?i=(.*)/);
+        if (matches !== null && matches[1] && matches[1] !== userId) {
+            userId = matches[1];
+            chrome.tabs.sendMessage(tabs[0].id, { message: "get point", id: matches[1], api: '1' }, function (response) {
+                //
+            });
+        }
+    })
+
 });
+    
+
+let userId = '';
 
 chrome.tabs.onUpdated.addListener(function () {
     chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
+        // console.log('vaof', tabs[0]);
+        
         if (url !== tabs[0].url) {
             url = tabs[0].url;
             let matches = url.match(/https:\/\/unipos.me\/.*?i=(.*)/);
-            if (matches !== null && matches[1]) {
-                chrome.tabs.sendMessage(tabs[0].id, { message: "get point", id: matches[1] }, function (response) {
+            if (matches !== null && matches[1] && matches[1] !== userId) {
+                userId = matches[1];
+                chrome.tabs.sendMessage(tabs[0].id, { message: "get point", id: matches[1]}, function (response) {
+                    //
                 });
             }
         }
     });
+})
+
+chrome.runtime.onMessage.addListener(function (params) {
+    console.log(params);
+    if (params.message === 'get point') {
+        console.log('vào');
+        
+        chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
+        url = tabs[0].url;
+        console.log(url);
+        
+        let matches = url.match(/https:\/\/unipos.me\/.*?i=(.*)/);
+        console.log(matches);
+        
+        if (matches !== null && matches[1]) {
+            userId = matches[1];
+            console.log('vàooooooo');
+            
+            chrome.tabs.sendMessage(tabs[0].id, { message: "get point", id: matches[1] }, function (response) {
+                //
+            });
+        }
+    })
+    }
+
 })

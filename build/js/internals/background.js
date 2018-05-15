@@ -10489,6 +10489,20 @@ var getPoint = function () {
                                 sumSent += value[2][_index2].praise_count * 2;
                             }
                             console.log(sumReceive, sumSent);
+
+                            var html = "<div style=\"padding-left: 25px\">Cumulative: <span class=\"sidePoint_total-num\" style=\"margin-right: 15px;color: blue\" > " + sumReceive + "</span>    Sent:<span class=\"sidePoint_total-num\" style=\"color:red\"> " + sumSent + "</span></div>";
+                            var html1 = "<div class=\"ownProfile_groups\">Cumulative: <span class=\"sidePoint_total-num\" style=\"margin-right: 15px;color: blue\" >  " + sumReceive + "</span>    Sent:<span class=\"sidePoint_total-num\" style=\"color:red\"> " + sumSent + "</span></div>";
+                            var itv = setInterval(function () {
+                                if (__WEBPACK_IMPORTED_MODULE_1_jquery___default()('.ownProfile_right').length) {
+                                    if (__WEBPACK_IMPORTED_MODULE_1_jquery___default()('.ownProfile_groups').length) {
+                                        __WEBPACK_IMPORTED_MODULE_1_jquery___default()('.ownProfile_groups').append(html);
+                                    } else {
+                                        __WEBPACK_IMPORTED_MODULE_1_jquery___default()('.ownProfile_right').append(html1);
+                                    }
+                                    // $('.ownProfile_groups').html(sumReceive);
+                                    clearInterval(itv);
+                                }
+                            }, 100);
                         });
 
                     case 7:
@@ -10514,7 +10528,8 @@ function makeRequest(type, member_id) {
             "jsonrpc": "2.0",
             "method": "Unipos.GetCards2",
             "params": {
-                "offset_card_id": "", "count": 5000
+                "offset_card_id": "",
+                "count": 6969
             },
             "id": "Unipos.GetCards2"
         };
@@ -10537,7 +10552,7 @@ function makeRequest(type, member_id) {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "https://unipos.me/q/jsonrpc");
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader("x-unipos-token", "7226a66a-5660-4714-916f-aad8abc39268");
+        xhr.setRequestHeader("x-unipos-token", localStorage['authnToken']);
         xhr.setRequestHeader("Cache-Control", "no-cache");
         xhr.onload = function () {
             if (this.status >= 200 && this.status < 300) {
@@ -10559,20 +10574,15 @@ function makeRequest(type, member_id) {
     });
 }
 
-getPoint();
-__WEBPACK_IMPORTED_MODULE_1_jquery___default()(document).ready(function () {
-    setTimeout(function () {
-        __WEBPACK_IMPORTED_MODULE_1_jquery___default()('.ownProfile_displayName').bind("DOMSubtreeModified", function () {
-            alert('changed');
-        });
-    }, 2000);
-});
-
 chrome.runtime.onMessage.addListener(function (params) {
     console.log(params);
     if (params.message === 'get point') {
         getPoint(params.id);
     }
+});
+
+chrome.runtime.sendMessage({ message: "get point" }, function (response) {
+    // console.log(response);
 });
 
 /***/ }),

@@ -65,6 +65,40 @@
 /************************************************************************/
 /******/ ({
 
+/***/ 14:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ChromeAPI = function () {
+    function ChromeAPI() {
+        _classCallCheck(this, ChromeAPI);
+
+        console.log('va0f');
+    }
+
+    _createClass(ChromeAPI, [{
+        key: 'getUrl',
+        value: function getUrl() {
+            var url = '';
+            chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
+                url = tabs[0].url;
+            });
+            return url;
+        }
+    }]);
+
+    return ChromeAPI;
+}();
+
+var api = new ChromeAPI();
+/* unused harmony default export */ var _unused_webpack_default_export = (api);
+
+/***/ }),
+
 /***/ 6:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -78,7 +112,7 @@ module.exports = __webpack_require__(7);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__test_js__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__chrome_api__ = __webpack_require__(14);
 // function addTag(tagName) { // sử dụng chrome storage để lưu trữ thẻ tag người dùng nhập thêm
 //     chrome.storage.sync.get('myTags', function(data) {
 //         if (Array.isArray(data.myTags)) {
@@ -200,67 +234,64 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // });
 
 
-console.log(__WEBPACK_IMPORTED_MODULE_0__test_js__["a" /* default */]);
+// console.log(api);
 
+var url = '';
 chrome.runtime.onInstalled.addListener(function () {
-    chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
-        chrome.declarativeContent.onPageChanged.addRules([{
-            conditions: [
-            // When a page contains a <video> tag...
-            console.log('vào'), new chrome.declarativeContent.PageStateMatcher({
-                pageUrl: { hostEquals: 'www.youtube.com' }
-            })],
-            // ... show the page action.
-            actions: [new chrome.declarativeContent.ShowPageAction()]
-        }]);
+    chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
+        url = tabs[0].url;
+        var matches = url.match(/https:\/\/unipos.me\/.*?i=(.*)/);
+        if (matches !== null && matches[1] && matches[1] !== userId) {
+            userId = matches[1];
+            chrome.tabs.sendMessage(tabs[0].id, { message: "get point", id: matches[1], api: '1' }, function (response) {
+                //
+            });
+        }
     });
 });
-var url = '';
-chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
-    url = tabs[0].url;
-});
+
+var userId = '';
 
 chrome.tabs.onUpdated.addListener(function () {
     chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
+        // console.log('vaof', tabs[0]);
+
         if (url !== tabs[0].url) {
             url = tabs[0].url;
             var matches = url.match(/https:\/\/unipos.me\/.*?i=(.*)/);
-            if (matches !== null && matches[1]) {
-                chrome.tabs.sendMessage(tabs[0].id, { message: "get point", id: matches[1] }, function (response) {});
+            if (matches !== null && matches[1] && matches[1] !== userId) {
+                userId = matches[1];
+                chrome.tabs.sendMessage(tabs[0].id, { message: "get point", id: matches[1] }, function (response) {
+                    //
+                });
             }
         }
     });
 });
 
-/***/ }),
+chrome.runtime.onMessage.addListener(function (params) {
+    console.log(params);
+    if (params.message === 'get point') {
+        console.log('vào');
 
-/***/ 8:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+        chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
+            url = tabs[0].url;
+            console.log(url);
 
-"use strict";
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+            var matches = url.match(/https:\/\/unipos.me\/.*?i=(.*)/);
+            console.log(matches);
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+            if (matches !== null && matches[1]) {
+                userId = matches[1];
+                console.log('vàooooooo');
 
-var Test = function () {
-    function Test() {
-        _classCallCheck(this, Test);
-
-        console.log('va0f');
+                chrome.tabs.sendMessage(tabs[0].id, { message: "get point", id: matches[1] }, function (response) {
+                    //
+                });
+            }
+        });
     }
-
-    _createClass(Test, [{
-        key: 'print1',
-        value: function print1() {
-            console.log('print vào');
-        }
-    }]);
-
-    return Test;
-}();
-
-var test = new Test();
-/* harmony default export */ __webpack_exports__["a"] = (test);
+});
 
 /***/ })
 

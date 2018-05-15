@@ -6,7 +6,8 @@ function makeRequest(type, member_id) {
             "jsonrpc": "2.0",
             "method": "Unipos.GetCards2",
             "params": {
-                "offset_card_id": "", "count": 5000
+                "offset_card_id": "",
+                "count": 6969
             },
             "id": "Unipos.GetCards2"
         };
@@ -29,7 +30,7 @@ function makeRequest(type, member_id) {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "https://unipos.me/q/jsonrpc");
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader("x-unipos-token", "7226a66a-5660-4714-916f-aad8abc39268");
+        xhr.setRequestHeader("x-unipos-token", localStorage['authnToken']);
         xhr.setRequestHeader("Cache-Control", "no-cache");
         xhr.onload = function () {
             if (this.status >= 200 && this.status < 300) {
@@ -74,18 +75,22 @@ async function getPoint(member_id = 'b08d3b24-0ce7-4b8a-aaf2-e1dad1bee0d3') {
             sumSent += value[2][index].praise_count * 2;
         }
         console.log(sumReceive, sumSent);
+
+        let html = `<div style="padding-left: 25px">Cumulative: <span class="sidePoint_total-num" style="margin-right: 15px;color: blue" > ${sumReceive}</span>    Sent:<span class="sidePoint_total-num" style="color:red"> ${sumSent}</span></div>`
+        let html1 = `<div class="ownProfile_groups">Cumulative: <span class="sidePoint_total-num" style="margin-right: 15px;color: blue" >  ${sumReceive}</span>    Sent:<span class="sidePoint_total-num" style="color:red"> ${sumSent}</span></div>`
+        let itv = setInterval(() => {
+            if ($('.ownProfile_right').length) {
+                if ($('.ownProfile_groups').length) {
+                    $('.ownProfile_groups').append(html);
+                } else {
+                    $('.ownProfile_right').append(html1);
+                }
+                // $('.ownProfile_groups').html(sumReceive);
+                clearInterval(itv);
+            }
+        }, 100);
     });
 }
-
-getPoint();
-$(document).ready(function() {
-    setTimeout(() => {
-        $('.ownProfile_displayName').bind("DOMSubtreeModified", function () {
-            alert('changed');
-        });    
-    }, 2000);
-    
-})
 
 chrome.runtime.onMessage.addListener(function (params) {
     console.log(params);
@@ -94,4 +99,8 @@ chrome.runtime.onMessage.addListener(function (params) {
     }
     
 })
+
+chrome.runtime.sendMessage({ message: "get point" }, function (response) {
+    // console.log(response);
+});
 

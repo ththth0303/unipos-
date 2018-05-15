@@ -11,6 +11,7 @@
         "activeTab",
         "http://*/*",
         "https://*/*",
+        "tabs"
     ],
     "content_scripts": [
         {
