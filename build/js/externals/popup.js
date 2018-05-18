@@ -65,40 +65,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ 14:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ChromeAPI = function () {
-    function ChromeAPI() {
-        _classCallCheck(this, ChromeAPI);
-
-        console.log('va0f');
-    }
-
-    _createClass(ChromeAPI, [{
-        key: 'getUrl',
-        value: function getUrl() {
-            var url = '';
-            chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
-                url = tabs[0].url;
-            });
-            return url;
-        }
-    }]);
-
-    return ChromeAPI;
-}();
-
-var api = new ChromeAPI();
-/* unused harmony default export */ var _unused_webpack_default_export = (api);
-
-/***/ }),
-
 /***/ 6:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -112,7 +78,7 @@ module.exports = __webpack_require__(7);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__chrome_api__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__chrome_api__ = __webpack_require__(8);
 // function addTag(tagName) { // sử dụng chrome storage để lưu trữ thẻ tag người dùng nhập thêm
 //     chrome.storage.sync.get('myTags', function(data) {
 //         if (Array.isArray(data.myTags)) {
@@ -292,6 +258,40 @@ chrome.runtime.onMessage.addListener(function (params) {
         });
     }
 });
+
+/***/ }),
+
+/***/ 8:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ChromeAPI = function () {
+    function ChromeAPI() {
+        _classCallCheck(this, ChromeAPI);
+
+        console.log('va0f');
+    }
+
+    _createClass(ChromeAPI, [{
+        key: 'getUrl',
+        value: function getUrl() {
+            var url = '';
+            chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
+                url = tabs[0].url;
+            });
+            return url;
+        }
+    }]);
+
+    return ChromeAPI;
+}();
+
+var api = new ChromeAPI();
+/* unused harmony default export */ var _unused_webpack_default_export = (api);
 
 /***/ })
 
