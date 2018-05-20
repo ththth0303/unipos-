@@ -1,13 +1,15 @@
-import $ from "jquery";
+import $ from 'jquery';
+import axios from 'axios';
 
-function makeRequest(type, member_id) {
+const count = 500;
+function makeRequest(type, member_id, offset_card_id) {
     return new Promise(function (resolve, reject) {
         let data = {
             "jsonrpc": "2.0",
             "method": "Unipos.GetCards2",
             "params": {
-                "offset_card_id": "",
-                "count": 6969
+                offset_card_id,
+                count,
             },
             "id": "Unipos.GetCards2"
         };
@@ -25,59 +27,56 @@ function makeRequest(type, member_id) {
                 data.params.to_member_id = member_id;
                 break;
         }
-        data = JSON.stringify(data);
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://unipos.me/q/jsonrpc");
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader("x-unipos-token", localStorage['authnToken']);
-        xhr.setRequestHeader("Cache-Control", "no-cache");
-        xhr.onload = function () {
-            if (this.status >= 200 && this.status < 300) {
-                resolve(JSON.parse(xhr.response).result);
-            } else {
-                reject({
-                    status: this.status,
-                    statusText: xhr.statusText
-                });
-            }
-        };
-        xhr.onerror = function () {
-            reject({
-                status: this.status,
-                statusText: xhr.statusText
-            });
-        };
-        xhr.send(data);
+        axios({
+            "url": "https://unipos.me/q/jsonrpc",
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json",
+                "x-unipos-token": localStorage['authnToken'],
+            },
+            data
+        }).then(response => {
+            resolve(response.data.result);
+        }).catch(error => {
+            reject(error)
+        });
     });
 }
 
-// Example:
+async function getReceived(type, member_id) {
+    let sent = {point: 0, clap: 0, time: 0};
+    let offset_card_id = '';
+    while (true) {
+        let result = await makeRequest(type, member_id, offset_card_id);
+        offset_card_id = result.length > 0 && result[result.length -1].id;
+        for (const key in result) {
+            sent.point += result[key].point;
+            sent.clap += result[key].praise_count;
+            sent.time++;
+        }
+        if (result.length < count) {
+            return sent;
+        }
+    }
+}
 
-async function getPoint(member_id = 'b08d3b24-0ce7-4b8a-aaf2-e1dad1bee0d3') {
-
-
-    let sent = makeRequest('sent', member_id);
-    let received = makeRequest('received', member_id);
-    let clapped = makeRequest('clapped', member_id);
+async function getPoint(member_id) {
+    let sent = getReceived('send', member_id);  
+    let received = getReceived('received', member_id);
+    let clapped = getReceived('clapped', member_id);
 
     let sumReceive = 0;
     let sumSent = 0;
     await Promise.all([sent, received, clapped]).then((value) => {
-        for (let index = 0; index < value[0].length; index++) {
-            sumReceive += value[0][index].point + value[0][index].praise_count;
-        }
-        for (let index = 0; index < value[1].length; index++) {
-            sumReceive += value[1][index].praise_count;
-            sumSent += value[1][index].point;
-        }
-        for (let index = 0; index < value[2].length; index++) {
-            sumSent += value[2][index].praise_count * 2;
-        }
+        console.log(value);
+        
+        sumReceive = value[0].point + value[0].clap + value[1].clap;
+        sumSent = value[1].point + value[2].clap*2;
         console.log(sumReceive, sumSent);
 
-        let html = `<div style="padding-left: 25px">Cumulative: <span class="sidePoint_total-num" style="margin-right: 15px;color: blue" > ${sumReceive}</span>    Sent:<span class="sidePoint_total-num" style="color:red"> ${sumSent}</span></div>`
-        let html1 = `<div class="ownProfile_groups">Cumulative: <span class="sidePoint_total-num" style="margin-right: 15px;color: blue" >  ${sumReceive}</span>    Sent:<span class="sidePoint_total-num" style="color:red"> ${sumSent}</span></div>`
+        let html = `<div style="padding-left: 25px">Cumulative: <span class="sidePoint_total-num" style="margin-right: 15px;color: blue" > ${sumReceive}/${value[0].time}time</span>    Sent:<span class="sidePoint_total-num" style="color:red"> ${sumSent}/${value[1].time}time</span></div>`
+        let html1 = `<div class="ownProfile_groups">Cumulative: <span class="sidePoint_total-num" style="margin-right: 15px;color: blue" >  ${sumReceive}/${value[0].time}</span>    Sent:<span class="sidePoint_total-num" style="color:red"> ${sumSent}</span></div>`
         let itv = setInterval(() => {
             if ($('.ownProfile_right').length) {
                 if ($('.ownProfile_groups').length) {
@@ -85,7 +84,6 @@ async function getPoint(member_id = 'b08d3b24-0ce7-4b8a-aaf2-e1dad1bee0d3') {
                 } else {
                     $('.ownProfile_right').append(html1);
                 }
-                // $('.ownProfile_groups').html(sumReceive);
                 clearInterval(itv);
             }
         }, 100);
@@ -100,7 +98,4 @@ chrome.runtime.onMessage.addListener(function (params) {
     
 })
 
-chrome.runtime.sendMessage({ message: "get point" }, function (response) {
-    // console.log(response);
-});
-
+chrome.runtime.sendMessage({ message: "get point" });
