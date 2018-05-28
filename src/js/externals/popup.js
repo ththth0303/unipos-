@@ -1,5 +1,3 @@
-import api from "./chrome-api";
-
 let url = '';
 let userId = '';
 
@@ -8,7 +6,7 @@ chrome.tabs.onUpdated.addListener(function () {
         if (url !== tabs[0].url) {
             url = tabs[0].url;
             let matches = url.match(/https:\/\/unipos.me\/.*?i=(.*)/);
-            if (matches !== null && matches[1] && matches[1] !== userId) {
+            if (matches && matches[1] && matches[1] !== userId) {
                 userId = matches[1];
                 chrome.tabs.sendMessage(tabs[0].id, { message: "get point", id: matches[1]});
             }

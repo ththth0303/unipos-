@@ -69,14 +69,12 @@ async function getPoint(member_id) {
     let sumReceive = 0;
     let sumSent = 0;
     await Promise.all([sent, received, clapped]).then((value) => {
-        console.log(value);
-        
         sumReceive = value[0].point + value[0].clap + value[1].clap;
         sumSent = value[1].point + value[2].clap*2;
         console.log(sumReceive, sumSent);
 
-        let html = `<div style="padding-left: 25px">Cumulative: <span class="sidePoint_total-num" style="margin-right: 15px;color: blue" > ${sumReceive}/${value[0].time}time</span>    Sent:<span class="sidePoint_total-num" style="color:red"> ${sumSent}/${value[1].time}time</span></div>`
-        let html1 = `<div class="ownProfile_groups">Cumulative: <span class="sidePoint_total-num" style="margin-right: 15px;color: blue" >  ${sumReceive}/${value[0].time}</span>    Sent:<span class="sidePoint_total-num" style="color:red"> ${sumSent}</span></div>`
+        let html = `<div style="padding-left: 25px">Cumulative: <span class="sidePoint_total-num" style="margin-right: 15px;color: blue" > ${sumReceive}</span>    Sent:<span class="sidePoint_total-num" style="color:red"> ${sumSent}</span></div>`
+        let html1 = `<div class="ownProfile_groups">Cumulative: <span class="sidePoint_total-num" style="margin-right: 15px;color: blue" >  ${sumReceive}</span>    Sent:<span class="sidePoint_total-num" style="color:red"> ${sumSent}</span></div>`
         let itv = setInterval(() => {
             if ($('.ownProfile_right').length) {
                 if ($('.ownProfile_groups').length) {
